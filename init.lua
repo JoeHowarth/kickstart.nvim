@@ -125,68 +125,69 @@ if not vim.loop.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
--- [[ Configure and install plugins ]]
---
---  To check the current status of your plugins, run
---    :Lazy
---
---  You can press `?` in this menu for help. Use `:q` to close the window
---
---  To update plugins you can run
---    :Lazy update
---
-require('lazy').setup({
-  { 'williamboman/mason.nvim', config = true },
+if vim.g.vscode then
+  -- VSCode extension
+else
+  -- ordinary Neovim
 
-  { -- name = 'catppuccin',
-    priority = 1000,
-    -- 'folke/tokyonight.nvim',
-    'catppuccin/nvim',
-    -- 'projekt0n/github-nvim-theme',
-    -- priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      -- vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.colorscheme 'catppuccin-latte'
-      -- vim.cmd 'colorscheme github_light_high_contrast'
+  --  To update plugins you can run
+  --    :Lazy update
+  require('lazy').setup({
+    { 'williamboman/mason.nvim', config = true },
 
-      -- You can configure highlights by doing something like:
-      -- vim.cmd.hi 'Comment gui=none'
-      vim.cmd.hi 'DiagnosticUnnecessary guifg=#737aa2'
-      vim.cmd.hi 'Comment guifg=#7982a9 gui=italic'
-    end,
-  },
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  { import = 'kickstart.plugins' },
-  { import = 'custom.plugins' },
-}, {
-  ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
-    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
+    {
+      'folke/tokyonight.nvim',
+      priority = 1000, -- Make sure to load this before all the other start plugins.
+      init = function()
+        -- Load the colorscheme here.
+        -- Like many other themes, this one has different styles, and you could load
+        -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+        vim.cmd.colorscheme 'tokyonight-night'
+        -- vim.cmd.colorscheme 'tokyonight-day'
+        vim.cmd.hi 'DiagnosticUnnecessary guifg=#737aa2'
+        vim.cmd.hi 'Comment guifg=#7982a9 gui=italic'
+      end,
     },
-  },
-})
+    -- {
+    --   'catppuccin/nvim',
+    --   priority = 1000, -- Make sure to load this before all the other start plugins.
+    --   init = function()
+    --     -- vim.cmd.colorscheme 'catppuccin-latte'
+    --
+    --     vim.cmd.hi 'DiagnosticUnnecessary guifg=#737aa2'
+    --     vim.cmd.hi 'Comment guifg=#7982a9 gui=italic'
+    --   end,
+    -- },
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+    -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
+    --    This is the easiest way to modularize your config.
+    --
+    --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
+    --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
+    { import = 'kickstart.plugins' },
+    { import = 'custom.plugins' },
+  }, {
+    ui = {
+      -- If you are using a Nerd Font: set icons to an empty table which will use the
+      -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
+      icons = vim.g.have_nerd_font and {} or {
+        cmd = '⌘',
+        config = '🛠',
+        event = '📅',
+        ft = '📂',
+        init = '⚙',
+        keys = '🗝',
+        plugin = '🔌',
+        runtime = '💻',
+        require = '🌙',
+        source = '📄',
+        start = '🚀',
+        task = '📌',
+        lazy = '💤 ',
+      },
+    },
+  })
+
+  -- The line beneath this is called `modeline`. See `:help modeline`
+  -- vim: ts=2 sts=2 sw=2 et
+end
