@@ -102,6 +102,32 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- Enable autoread globally
+vim.o.autoread = true
+
+-- Create an autocommand group for file watching
+vim.api.nvim_create_augroup('AutoReload', { clear = true })
+
+-- Setup autocommands to check for file changes
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
+  group = 'AutoReload',
+  pattern = '*',
+  callback = function()
+    if vim.fn.getcmdwintype() == '' then
+      vim.cmd 'checktime'
+    end
+  end,
+})
+
+-- Optional: Add a notification when files are reloaded
+vim.api.nvim_create_autocmd('FileChangedShellPost', {
+  group = 'AutoReload',
+  pattern = '*',
+  callback = function()
+    vim.notify('File changed on disk. Buffer reloaded!', vim.log.levels.INFO)
+  end,
+})
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
