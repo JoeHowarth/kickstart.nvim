@@ -139,7 +139,34 @@ return { -- LSP Configuration & Plugins
     local servers = {
       clangd = {},
       -- gopls = {},
-      pyright = {},
+      pyright = {
+        settings = {
+          python = {
+            analysis = {
+              typeCheckingMode = 'basic',
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = true,
+              diagnosticMode = 'workspace',
+            },
+            venvPath = '.',
+            pythonPath = function()
+              -- Try to get Python path from Poetry environment
+              local poetry_path = vim.fn.trim(vim.fn.system 'poetry env info -p 2>/dev/null')
+              if vim.v.shell_error == 0 then
+                return poetry_path .. '/bin/python'
+              end
+              -- Fallback to pyenv if poetry not found
+              local pyenv_path = vim.fn.trim(vim.fn.system 'pyenv which python 2>/dev/null')
+              if vim.v.shell_error == 0 then
+                return pyenv_path
+              end
+              -- Final fallback to system Python
+              return vim.fn.exepath 'python3' or vim.fn.exepath 'python'
+            end,
+          },
+        },
+      },
+      ruff_lsp = {}, -- Python linting
       rust_analyzer = {},
       -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
       --
@@ -181,6 +208,9 @@ return { -- LSP Configuration & Plugins
     local ensure_installed = vim.tbl_keys(servers or {})
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format Lua code
+      'black', -- Python formatter
+      'ruff', -- Python linter
+      'ruff-lsp', -- Python linter lsp
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 

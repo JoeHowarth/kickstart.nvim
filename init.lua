@@ -2,7 +2,6 @@
 require('kickstart.options').setup()
 require('kickstart.keymaps').setup()
 
-
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -35,7 +34,6 @@ else
   --    :Lazy update
   require('lazy').setup({
     { 'williamboman/mason.nvim', config = true },
-
     {
       'folke/tokyonight.nvim',
       priority = 1000, -- Make sure to load this before all the other start plugins.
@@ -49,28 +47,15 @@ else
         vim.cmd.hi 'Comment guifg=#7982a9 gui=italic'
       end,
     },
-    -- {
-    --   'catppuccin/nvim',
-    --   priority = 1000, -- Make sure to load this before all the other start plugins.
-    --   init = function()
-    --     -- vim.cmd.colorscheme 'catppuccin-latte'
-    --
-    --     vim.cmd.hi 'DiagnosticUnnecessary guifg=#737aa2'
-    --     vim.cmd.hi 'Comment guifg=#7982a9 gui=italic'
-    --   end,
-    -- },
+    {
+      'catppuccin/nvim',
+      priority = 999,
+    },
 
-    -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-    --    This is the easiest way to modularize your config.
-    --
-    --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-    --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
     { import = 'kickstart.plugins' },
     { import = 'custom.plugins' },
   }, {
     ui = {
-      -- If you are using a Nerd Font: set icons to an empty table which will use the
-      -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
       icons = vim.g.have_nerd_font and {} or {
         cmd = '⌘',
         config = '🛠',
