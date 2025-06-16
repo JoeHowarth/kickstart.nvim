@@ -72,6 +72,12 @@ opt.scrolloff = 10
 -- Enable autoread globally
 vim.o.autoread = true
 
+-- Set tab width to 4 spaces
+opt.tabstop = 4
+opt.shiftwidth = 4
+opt.softtabstop = 4
+opt.expandtab = true
+
 return {
   setup = function()
     -- Create an autocommand group for file watching

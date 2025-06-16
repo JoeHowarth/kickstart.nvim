@@ -28,7 +28,7 @@ return { -- LSP Configuration & Plugins
           vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
 
-        vim.lsp.set_log_level 'debug'
+        -- vim.lsp.set_log_level 'debug'
 
         -- Jump to the definition of the word under your cursor.
         --  This is where a variable was first declared, or where a function is defined, etc.
@@ -149,22 +149,24 @@ return { -- LSP Configuration & Plugins
               diagnosticMode = 'workspace',
             },
             venvPath = '.',
-            pythonPath = function()
-              -- Try to get Python path from Poetry environment
-              local poetry_path = vim.fn.trim(vim.fn.system 'poetry env info -p 2>/dev/null')
-              if vim.v.shell_error == 0 then
-                return poetry_path .. '/bin/python'
-              end
-              -- Fallback to pyenv if poetry not found
-              local pyenv_path = vim.fn.trim(vim.fn.system 'pyenv which python 2>/dev/null')
-              if vim.v.shell_error == 0 then
-                return pyenv_path
-              end
-              -- Final fallback to system Python
-              return vim.fn.exepath 'python3' or vim.fn.exepath 'python'
-            end,
           },
         },
+        on_new_config = function(config, root_dir)
+          -- Dynamically set Python path when LSP attaches
+          local poetry_path = vim.fn.trim(vim.fn.system 'poetry env info -p 2>/dev/null')
+          if vim.v.shell_error == 0 then
+            config.settings.python.pythonPath = poetry_path .. '/bin/python'
+            return
+          end
+          -- Fallback to pyenv if poetry not found
+          local pyenv_path = vim.fn.trim(vim.fn.system 'pyenv which python 2>/dev/null')
+          if vim.v.shell_error == 0 then
+            config.settings.python.pythonPath = pyenv_path
+            return
+          end
+          -- Final fallback to system Python
+          config.settings.python.pythonPath = vim.fn.exepath 'python3' or vim.fn.exepath 'python' or 'python'
+        end,
       },
       ruff_lsp = {}, -- Python linting
       rust_analyzer = {},
@@ -174,11 +176,12 @@ return { -- LSP Configuration & Plugins
       --    https://github.com/pmizio/typescript-tools.nvim
       --
       -- But for many setups, the LSP (`tsserver`) will work just fine
-      -- ts_ls = {},
-      denols = {},
+      ts_ls = {},
+      -- denols = {},
       jsonls = {},
       --
 
+      markdown_oxide = {},
       lua_ls = {
         -- cmd = {...},
         -- filetypes = { ...},
