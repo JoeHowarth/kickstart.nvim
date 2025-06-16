@@ -15,6 +15,16 @@ return { -- LSP Configuration & Plugins
     { 'folke/neodev.nvim', opts = {} },
   },
   config = function()
+    -- Override vim.lsp.util.make_position_params to always include position_encoding
+    local make_position_params = vim.lsp.util.make_position_params
+    vim.lsp.util.make_position_params = function(win, offset_encoding)
+      if not offset_encoding then
+        local client = vim.lsp.get_clients({ bufnr = vim.api.nvim_win_get_buf(win or 0) })[1]
+        offset_encoding = client and client.offset_encoding or 'utf-16'
+      end
+      return make_position_params(win, offset_encoding)
+    end
+
     --  This function gets run when an LSP attaches to a particular buffer.
     --    That is to say, every time a new file is opened that is associated with
     --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -110,13 +120,17 @@ return { -- LSP Configuration & Plugins
           end, '[T]oggle Inlay [H]ints')
         end
 
-        require('lsp_signature').on_attach({
-          bind = true, -- This is mandatory, otherwise border config won't get registered.
-          handler_opts = {
-            border = 'rounded',
-          },
-          floating_window = false,
-        }, event.buf)
+        -- Set up lsp_signature with proper client handling
+        if client then
+          require('lsp_signature').on_attach({
+            bind = true, -- This is mandatory, otherwise border config won't get registered.
+            handler_opts = {
+              border = 'rounded',
+            },
+            floating_window = false,
+            client = client, -- Pass the client to lsp_signature
+          }, event.buf)
+        end
       end,
     })
 
@@ -225,6 +239,7 @@ return { -- LSP Configuration & Plugins
           -- by the server configuration above. Useful when disabling
           -- certain features of an LSP (for example, turning off formatting for tsserver)
           server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+          server.capabilities.positionEncoding = { 'utf-16' }
           require('lspconfig')[server_name].setup(server)
         end,
       },
