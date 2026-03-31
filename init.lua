@@ -62,8 +62,8 @@ else
         -- Load the colorscheme here.
         -- Like many other themes, this one has different styles, and you could load
         -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-        vim.cmd.colorscheme 'tokyonight-night'
-        -- vim.cmd.colorscheme 'tokyonight-day'
+        -- vim.cmd.colorscheme 'tokyonight-night'
+        vim.cmd.colorscheme 'tokyonight-day'
         vim.cmd.hi 'DiagnosticUnnecessary guifg=#737aa2'
         vim.cmd.hi 'Comment guifg=#7982a9 gui=italic'
       end,
