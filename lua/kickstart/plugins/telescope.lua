@@ -76,7 +76,11 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-    vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader><leader>', function()
+      builtin.find_files {
+        find_command = { 'rg', '--files', '--hidden', '--glob', '!.git/' },
+      }
+    end, { desc = '[ ] Find files' })
 
     -- Slightly advanced example of overriding default behavior and theme
     vim.keymap.set('n', '<leader>/', function()
@@ -100,5 +104,14 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>sn', function()
       builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
+
+    -- Find files from a custom directory
+    vim.keymap.set('n', '<leader>sF', function()
+      vim.ui.input({ prompt = 'Search dir: ', completion = 'dir' }, function(dir)
+        if dir and dir ~= '' then
+          builtin.find_files { cwd = dir }
+        end
+      end)
+    end, { desc = '[S]earch [F]iles in directory' })
   end,
 }

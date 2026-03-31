@@ -200,6 +200,20 @@ return {
         desc = 'Rename File',
       },
       {
+        '<leader>cr',
+        function()
+          Snacks.terminal('cargo run', { interactive = false })
+        end,
+        desc = '[C]argo [R]un',
+      },
+      {
+        '<leader>ct',
+        function()
+          Snacks.terminal('cargo test', { interactive = false })
+        end,
+        desc = '[C]argo [T]est',
+      },
+      {
         '<c-/>',
         function()
           Snacks.terminal()

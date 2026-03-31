@@ -12,7 +12,7 @@ return { -- LSP Configuration & Plugins
 
     -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
-    { 'folke/neodev.nvim', opts = {} },
+    { 'folke/lazydev.nvim', opts = {} },
   },
   config = function()
     -- Override vim.lsp.util.make_position_params to always include position_encoding
@@ -182,8 +182,19 @@ return { -- LSP Configuration & Plugins
           config.settings.python.pythonPath = vim.fn.exepath 'python3' or vim.fn.exepath 'python' or 'python'
         end,
       },
-      ruff_lsp = {}, -- Python linting
-      rust_analyzer = {},
+      ruff = {}, -- Python linting
+      rust_analyzer = {
+        -- Use rustup's rust-analyzer to stay in sync with the toolchain
+        cmd = { 'rustup', 'run', 'stable', 'rust-analyzer' },
+        settings = {
+          ['rust-analyzer'] = {
+            diagnostics = {
+              disabled = { 'inactive-code' },
+              enableExperimental = false,
+            },
+          },
+        },
+      },
       -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
       --
       -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -222,12 +233,15 @@ return { -- LSP Configuration & Plugins
 
     -- You can add other tools here that you want Mason to install
     -- for you, so that they are available from within Neovim.
-    local ensure_installed = vim.tbl_keys(servers or {})
+    -- Servers managed outside Mason (e.g. via rustup)
+    local mason_ignore = { 'rust_analyzer' }
+    local ensure_installed = vim.tbl_filter(function(s)
+      return not vim.tbl_contains(mason_ignore, s)
+    end, vim.tbl_keys(servers or {}))
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format Lua code
       'black', -- Python formatter
       'ruff', -- Python linter
-      'ruff-lsp', -- Python linter lsp
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -244,5 +258,13 @@ return { -- LSP Configuration & Plugins
         end,
       },
     }
+
+    -- Setup servers not managed by Mason
+    for _, name in ipairs(mason_ignore) do
+      local server = servers[name] or {}
+      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      server.capabilities.positionEncoding = { 'utf-16' }
+      require('lspconfig')[name].setup(server)
+    end
   end,
 }
