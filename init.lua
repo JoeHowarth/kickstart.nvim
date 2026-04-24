@@ -55,22 +55,46 @@ else
   --    :Lazy update
   require('lazy').setup({
     { 'williamboman/mason.nvim', config = true },
+    { 'folke/tokyonight.nvim', priority = 1000 },
+    { 'catppuccin/nvim', name = 'catppuccin', priority = 999 },
+    { 'rose-pine/neovim', name = 'rose-pine' },
+    { 'rebelot/kanagawa.nvim' },
+    { 'sainnhe/everforest' },
+    { 'ellisonleao/gruvbox.nvim' },
     {
-      'folke/tokyonight.nvim',
-      priority = 1000, -- Make sure to load this before all the other start plugins.
+      'zaldih/themery.nvim',
+      lazy = false,
+      opts = {
+        themes = {
+          { name = 'Tokyo Night', colorscheme = 'tokyonight' },
+          -- { name = 'Tokyo Night Storm', colorscheme = 'tokyonight-storm' },
+          -- { name = 'Tokyo Night Moon', colorscheme = 'tokyonight-moon' },
+          { name = 'Tokyo Night Day', colorscheme = 'tokyonight-day' },
+          -- { name = 'Catppuccin Mocha', colorscheme = 'catppuccin-mocha' },
+          { name = 'Catppuccin Latte', colorscheme = 'catppuccin-latte' },
+          -- { name = 'Catppuccin Macchiato', colorscheme = 'catppuccin-macchiato' },
+          -- { name = 'Catppuccin Frappe', colorscheme = 'catppuccin-frappe' },
+          -- { name = 'Rosé Pine', colorscheme = 'rose-pine' },
+          { name = 'Rosé Pine Dawn', colorscheme = 'rose-pine-dawn' },
+          -- { name = 'Rosé Pine Moon', colorscheme = 'rose-pine-moon' },
+          -- { name = 'Kanagawa', colorscheme = 'kanagawa' },
+          { name = 'Kanagawa Lotus', colorscheme = 'kanagawa-lotus' },
+          -- { name = 'Kanagawa Dragon', colorscheme = 'kanagawa-dragon' },
+          -- { name = 'Everforest', colorscheme = 'everforest' },
+          -- { name = 'Gruvbox Dark', colorscheme = 'gruvbox' },
+        },
+        livePreview = true,
+      },
+      keys = {
+        { '<leader>ct', '<cmd>Themery<cr>', desc = '[C]olor [T]heme picker' },
+      },
       init = function()
-        -- Load the colorscheme here.
-        -- Like many other themes, this one has different styles, and you could load
-        -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-        -- Follows system light/dark via vim.o.background (auto-detected in 0.10+)
-        vim.cmd.colorscheme 'tokyonight'
-        vim.cmd.hi 'DiagnosticUnnecessary guifg=#737aa2'
-        vim.cmd.hi 'Comment guifg=#7982a9 gui=italic'
+        -- Load persisted theme or fall back to tokyonight
+        local themery_state = vim.fn.stdpath 'data' .. '/themery.json'
+        if vim.fn.filereadable(themery_state) == 0 then
+          vim.cmd.colorscheme 'tokyonight'
+        end
       end,
-    },
-    {
-      'catppuccin/nvim',
-      priority = 999,
     },
 
     { import = 'kickstart.plugins' },

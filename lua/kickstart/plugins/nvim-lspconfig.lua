@@ -245,26 +245,28 @@ return { -- LSP Configuration & Plugins
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    require('mason-lspconfig').setup {
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
-          -- This handles overriding only values explicitly passed
-          -- by the server configuration above. Useful when disabling
-          -- certain features of an LSP (for example, turning off formatting for tsserver)
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          server.capabilities.positionEncoding = { 'utf-16' }
-          require('lspconfig')[server_name].setup(server)
-        end,
-      },
-    }
-
-    -- Setup servers not managed by Mason
-    for _, name in ipairs(mason_ignore) do
-      local server = servers[name] or {}
+    -- Register every server's config via the nvim 0.11+ core API.
+    for name, server in pairs(servers) do
       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
       server.capabilities.positionEncoding = { 'utf-16' }
-      require('lspconfig')[name].setup(server)
+      vim.lsp.config(name, server)
+    end
+
+    -- Only auto-enable servers we've explicitly configured. Without this,
+    -- mason-lspconfig tries to enable any Mason-installed tool that lspconfig
+    -- lists as a server (e.g. stylua's future `--lsp` mode), which fails on
+    -- current releases.
+    local mason_servers = vim.tbl_filter(function(name)
+      return not vim.tbl_contains(mason_ignore, name)
+    end, vim.tbl_keys(servers))
+
+    require('mason-lspconfig').setup {
+      automatic_enable = mason_servers,
+    }
+
+    -- Enable servers not managed by Mason.
+    for _, name in ipairs(mason_ignore) do
+      vim.lsp.enable(name)
     end
   end,
 }
