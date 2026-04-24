@@ -54,7 +54,7 @@ else
   --  To update plugins you can run
   --    :Lazy update
   require('lazy').setup({
-    { 'williamboman/mason.nvim', config = true },
+    { 'luarocks/hererocks', build = 'rockspec', lazy = true },
     { 'folke/tokyonight.nvim', priority = 1000 },
     { 'catppuccin/nvim', name = 'catppuccin', priority = 999 },
     { 'rose-pine/neovim', name = 'rose-pine' },
@@ -100,6 +100,9 @@ else
     { import = 'kickstart.plugins' },
     { import = 'custom.plugins' },
   }, {
+    rocks = {
+      hererocks = true,
+    },
     ui = {
       icons = vim.g.have_nerd_font and {} or {
         cmd = '⌘',

@@ -102,5 +102,5 @@ return {
         vim.notify('File changed on disk. Buffer reloaded!', vim.log.levels.INFO)
       end,
     })
-  end
+  end,
 }

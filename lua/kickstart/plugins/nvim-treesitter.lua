@@ -9,16 +9,29 @@ return {
   lazy = false, -- main branch does not support lazy loading
   build = ':TSUpdate',
   config = function()
-    local nts = require('nvim-treesitter')
+    local nts = require 'nvim-treesitter'
 
     nts.setup {
-      install_dir = vim.fn.stdpath('data') .. '/site',
+      install_dir = vim.fn.stdpath 'data' .. '/site',
     }
 
     local parsers = {
-      'bash', 'c', 'diff', 'html', 'json', 'lua', 'luadoc',
-      'markdown', 'markdown_inline', 'python', 'rust',
-      'typescript', 'tsx', 'javascript', 'vim', 'vimdoc',
+      'bash',
+      'c',
+      'diff',
+      'html',
+      'json',
+      'lua',
+      'luadoc',
+      'markdown',
+      'markdown_inline',
+      'python',
+      'rust',
+      'typescript',
+      'tsx',
+      'javascript',
+      'vim',
+      'vimdoc',
     }
     nts.install(parsers)
 
